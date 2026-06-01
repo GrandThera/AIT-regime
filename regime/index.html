@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Grand Thera Regime Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/png" href="../assets/icon.png">
+</head>
+<body>
+  <header>
+    <div class="topbar">
+      <div class="brand">
+        <img class="logo-dark" src="../assets/grand-thera-logo-white.png" alt="Grand Thera">
+        <img class="logo-light" src="../assets/grand-thera-logo-primary.png" alt="Grand Thera">
+        <div class="title-block">
+          <h1>Grand Thera Regime Dashboard</h1>
+          <div class="subtitle">K-Means initialization + Gaussian Markov Switching</div>
+        </div>
+      </div>
+      <div class="controls">
+        <div class="control">
+          <label for="cluster-select">K</label>
+          <select id="cluster-select"></select>
+        </div>
+        <button id="theme-toggle" type="button" title="Toggle theme" aria-label="Toggle theme">☀</button>
+        <button id="command-open" class="action-btn" type="button" title="Command palette">Ctrl K</button>
+        <button id="load-series" class="action-btn" type="button" title="Load a single-column CSV/XLS time series">Load CSV/XLS</button>
+        <input id="series-file" class="file-input" type="file" accept=".csv,.xls,.txt,text/csv,text/plain">
+        <button id="export-csv" class="action-btn" type="button" title="Export probabilities as CSV">CSV</button>
+        <button id="export-json" class="action-btn" type="button" title="Export model as JSON">JSON</button>
+        <span id="upload-status" class="upload-status"></span>
+      </div>
+    </div>
+  </header>
+  <main>
+    <section class="metrics">
+      <div class="metric"><div class="metric-head"><span>Observations</span><button class="info-btn" type="button" data-info-title="Observations" data-info-body="Total number of raw price points in the loaded time series." aria-label="Explain Observations">i</button></div><strong id="metric-observations">0</strong></div>
+      <div class="metric"><div class="metric-head"><span>Modeled Windows</span><button class="info-btn" type="button" data-info-title="Modeled Windows" data-info-body="Number of rolling windows that produced model features and regime probabilities." aria-label="Explain Modeled Windows">i</button></div><strong id="metric-windows">0</strong></div>
+      <div class="metric"><div class="metric-head"><span>Regimes</span><button class="info-btn" type="button" data-info-title="Regimes" data-info-body="Number of hidden states/regimes being used by the selected model scenario." aria-label="Explain Regimes">i</button></div><strong id="metric-regimes">0</strong></div>
+      <div class="metric"><div class="metric-head"><span>Final Log-Likelihood</span><button class="info-btn" type="button" data-info-title="Final Log-Likelihood" data-info-body="Final likelihood score from the Markov Switching fit. Higher is generally better within comparable model settings." aria-label="Explain Final Log-Likelihood">i</button></div><strong id="metric-likelihood">0</strong></div>
+      <div class="metric"><div class="metric-head"><span>Latest Regime</span><button class="info-btn" type="button" data-info-title="Latest Regime" data-info-body="Dominant regime classification for the most recent modeled observation." aria-label="Explain Latest Regime">i</button></div><strong id="metric-latest">-</strong></div>
+    </section>
+
+    <section class="alert-strip" id="alert-strip"></section>
+
+    <section class="panel wide">
+      <div class="panel-head">
+        <h2>Regime Timeline</h2>
+        <span class="panel-tools">
+          <button id="timeline-reset" class="action-btn" type="button" title="Clear selection and return all widgets to the complete view">Full view</button>
+          <span class="panel-note">click any segment to inspect the observation</span>
+        </span>
+      </div>
+      <div class="timeline" id="regime-timeline"></div>
+    </section>
+
+    <section class="layout">
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Historical Price by Regime</h2>
+          <span class="panel-note" id="chart-note"></span>
+        </div>
+        <div class="range-controls">
+          <div class="range-control">
+            <label for="range-start">Start obs</label>
+            <input id="range-start" type="range" min="0" max="1" value="0">
+          </div>
+          <div class="range-control">
+            <label for="range-end">End obs</label>
+            <input id="range-end" type="range" min="1" max="1" value="1">
+          </div>
+          <div class="range-readout" id="range-readout">0 - 0</div>
+        </div>
+        <div class="chart-wrap"><svg id="price-chart" viewBox="0 0 1000 560" role="img" aria-label="Historical price by regime"></svg></div>
+        <div class="window-bar"><svg id="window-bar" viewBox="0 0 1000 42" role="img" aria-label="Observation range selector"></svg></div>
+        <div class="legend" id="legend"></div>
+        <div class="micro-grid" id="selected-signal-grid"></div>
+      </div>
+      <div class="stack">
+        <div class="panel">
+          <div class="panel-head"><h2>Regime Summary</h2></div>
+          <table>
+            <thead><tr><th>Regime</th><th>Share</th><th>Avg Prob.</th><th>Avg Return</th><th>Vol.</th></tr></thead>
+            <tbody id="summary-body"></tbody>
+          </table>
+        </div>
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Model Selection Criteria</h2>
+            <span class="panel-note">lower is better</span>
+          </div>
+          <table>
+            <thead><tr><th>Criterion</th><th>Value</th></tr></thead>
+            <tbody id="selection-body"></tbody>
+          </table>
+        </div>
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Observation Inspector</h2>
+            <span class="panel-note" id="inspector-note">selected</span>
+          </div>
+          <div class="inspector">
+            <div class="inspector-kv" id="inspector-kv"></div>
+            <div class="prob-bars" id="inspector-probabilities"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel wide">
+        <div class="panel-head">
+          <h2>Regime Probability Heatmap</h2>
+          <span class="panel-note">scroll horizontally through observations</span>
+        </div>
+        <div class="chart-wrap scroll-frame"><svg id="probability-heatmap" viewBox="0 0 1000 300" role="img" aria-label="Regime probability heatmap"></svg></div>
+    </section>
+
+    <section class="panel wide">
+      <div class="panel-head">
+        <h2>Regime Flow Diagnostics</h2>
+        <span class="panel-note">stability, concentration, and transition pressure</span>
+      </div>
+      <div class="flow-grid" id="flow-diagnostics"></div>
+    </section>
+
+    <section class="split">
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Interactive 3D Return-Volatility Surface</h2>
+          <span class="panel-note">drag=rotate, wheel=zoom, double click=reset</span>
+        </div>
+        <div class="chart-wrap"><canvas id="surface-canvas" width="900" height="560" aria-label="Interactive 3D return volatility time surface"></canvas></div>
+      </div>
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Transition Heatmap</h2>
+          <span class="mini-controls">
+            <button id="transition-zoom-out" type="button" title="Zoom out" aria-label="Zoom out">−</button>
+            <button id="transition-zoom-reset" type="button" title="Reset zoom" aria-label="Reset zoom">1×</button>
+            <button id="transition-zoom-in" type="button" title="Zoom in" aria-label="Zoom in">+</button>
+          </span>
+        </div>
+        <div class="chart-wrap scroll-frame"><svg id="transition-heatmap" viewBox="0 0 1000 380" role="img" aria-label="Transition probability heatmap"></svg></div>
+      </div>
+    </section>
+
+    <section class="split">
+      <div class="panel">
+        <div class="panel-head"><h2>Markov Transition Matrix</h2></div>
+        <table><tbody id="transition-body"></tbody></table>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h2>Latest Regime Probabilities</h2></div>
+        <table>
+          <thead><tr><th>Index</th><th>Regime</th><th>Probability</th></tr></thead>
+          <tbody id="latest-body"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+  <div id="dashboard-tooltip" class="tooltip"></div>
+  <div id="command-overlay" class="command-overlay" role="dialog" aria-modal="true" aria-label="Command palette">
+    <div class="command-box">
+      <input id="command-search" type="text" placeholder="Run command or jump to a widget">
+      <div class="command-list" id="command-list"></div>
+    </div>
+  </div>
+  <div id="info-overlay" class="info-overlay" role="dialog" aria-modal="true" aria-label="Metric explanation">
+    <div class="info-modal">
+      <div class="info-modal-head">
+        <h2 id="info-title">Metric</h2>
+        <button id="info-close" class="icon-btn" type="button" aria-label="Close explanation">×</button>
+      </div>
+      <div id="info-body" class="info-modal-body"></div>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
