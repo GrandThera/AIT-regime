@@ -1,4 +1,4 @@
-const API_BASE = 'https://thera-os-public-6d5652bhhq-uc.a.run.app';
+const API_BASE = 'https://api.thera-os.com';
 const REGIME_PALETTE = ['#ff8a4c','#2dd4bf','#f472b6','#a3e635','#4f8cff','#f05252','#2fb37c','#d6a93a'];
 const DATA = { prices: [], dates: [], scenarios: {}, scopedScenarios: {}, defaultScenario: "auto", colors: {}, parseDiagnostics: null };
 const state = { scenario: DATA.defaultScenario, selectedIndex: null, rangeStart: 0, rangeEnd: 1 };
