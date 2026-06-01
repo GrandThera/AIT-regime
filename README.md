@@ -80,6 +80,7 @@ Then open:
 http://127.0.0.1:8000/
 ```
 
+Note: If another Grand Thera page is already running on the same port, this page may not load correctly. Try using a different port, such as 8001, 8002, or 3000.
 
 
 ## 5. API Dependency
