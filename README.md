@@ -1,6 +1,6 @@
-# Grand Thera Regime Dashboard
+# Grand Thera AIT_Regime Dashboard
 
-Grand Thera Regime Dashboard is a compact open source research demo for exploring financial time-series regime detection workflows in a clean analytical dashboard. It is designed for specialists who want to add a transparent, dependency-light market regime modeling tool to their research toolkit, inspect regime probabilities, stress-test cluster counts, and reason about transition behavior from raw price series.
+Grand Thera AIT_Regime Dashboard is a compact open source research demo for exploring financial time-series regime detection workflows in a clean analytical dashboard. It is designed for specialists who want to add a transparent, dependency-light market regime modeling tool to their research toolkit, inspect regime probabilities, stress-test cluster counts, and reason about transition behavior from raw price series.
 
 This repository is not Grand Thera's final production technology. It does not include proprietary auto-calibration layers, production governance, automatic collaboration mechanisms, internal model orchestration, enterprise data pipelines, or any closed Grand Thera decision systems. Its purpose is research-oriented: to show how regime detection concepts, Markov Switching diagnostics, and interactive scenario analysis can be assembled into a small, inspectable tool.
 
@@ -8,9 +8,9 @@ This repository is not Grand Thera's final production technology. It does not in
 
 ## 1. Title and Description
 
-**Title:** Grand Thera Regime Dashboard
+**Title:** Grand Thera AIT_Regime Dashboard
 
-**Description:** Grand Thera Regime Dashboard analyzes financial price series and estimates the probability that each modeled observation belongs to a specific market regime. The input is a time-ordered sequence of positive prices, provided through the browser interface or through API-driven flows. The output includes regime labels, per-observation probabilities, uncertainty, Viterbi path diagnostics, model selection criteria, transition matrices, and summary statistics.
+**Description:** Grand Thera AIT_Regime Dashboard analyzes financial price series and estimates the probability that each modeled observation belongs to a specific market regime. The input is a time-ordered sequence of positive prices, provided through the browser interface or through API-driven flows. The output includes regime labels, per-observation probabilities, uncertainty, Viterbi path diagnostics, model selection criteria, transition matrices, and summary statistics.
 
 The implementation is designed to be transparent and readable. Core components such as feature engineering, standardization, K-Means clustering, automatic regime-count selection, Gaussian Markov Switching estimation, Baum-Welch training, and Viterbi decoding are implemented in this repository instead of being delegated to black-box regime-switching or clustering engines. The project exists as a compact research/demo tool for studying regime classification workflows and for showing how interpretable market-state diagnostics can be assembled from first principles.
 
@@ -64,8 +64,8 @@ No Node.js build step is required for the current frontend because it is served 
 Clone the repository:
 
 ```bash
-git clone https://github.com/GrandThera/regime.git
-cd regime
+git clone https://github.com/GrandThera/AIT-regime.git
+cd AIT-regime
 ```
 
 Serve the repository locally:
