@@ -249,10 +249,10 @@ async function loadInitialSample() {
   const status = document.getElementById("upload-status");
   try {
     status.textContent = "loading sample...";
-    const response = await fetch("sample.csv");
-    if (!response.ok) throw new Error(`Could not load sample.csv (${response.status})`);
+    const response = await fetch("data/sample.csv");
+    if (!response.ok) throw new Error(`Could not load data/sample.csv (${response.status})`);
     const blob = await response.blob();
-    const file = new File([blob], "sample.csv", { type: "text/csv" });
+    const file = new File([blob], "data/sample.csv", { type: "text/csv" });
     await uploadSeriesFile(file);
   } catch (error) {
     status.textContent = "sample failed";
